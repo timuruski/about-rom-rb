@@ -1,0 +1,35 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    coderay (1.1.0)
+    equalizer (0.0.11)
+    inflecto (0.0.2)
+    method_source (0.8.2)
+    pg (0.18.2)
+    pry (0.10.1)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+    rom (0.8.1)
+      equalizer (~> 0.0, >= 0.0.9)
+      transproc (~> 0.3, >= 0.3.0)
+    rom-sql (0.5.3)
+      equalizer (~> 0.0, >= 0.0.9)
+      rom (~> 0.8, >= 0.8.0)
+      sequel (~> 4.18)
+    sequel (4.25.0)
+    slop (3.6.0)
+    transproc (0.3.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  inflecto
+  pg
+  pry
+  rom-sql
+  sequel
+
+BUNDLED WITH
+   1.10.5
