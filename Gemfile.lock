@@ -1,25 +1,64 @@
+GIT
+  remote: git://github.com/rom-rb/rom-redis.git
+  revision: f9ba4db76a9af4bb365a386f189438ae7055ff7e
+  specs:
+    rom-redis (0.1.0)
+      redis (~> 3.0, >= 3.0.4)
+      redis-namespace (~> 1.5.2)
+      rom (~> 0.8.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
+    axiom-types (0.1.1)
+      descendants_tracker (~> 0.0.4)
+      ice_nine (~> 0.11.0)
+      thread_safe (~> 0.3, >= 0.3.1)
+    bson (3.2.1)
+    charlatan (0.1.0)
     coderay (1.1.0)
+    coercible (1.0.0)
+      descendants_tracker (~> 0.0.1)
+    connection_pool (2.2.0)
+    descendants_tracker (0.0.4)
+      thread_safe (~> 0.3, >= 0.3.1)
     equalizer (0.0.11)
+    ice_nine (0.11.1)
     inflecto (0.0.2)
     method_source (0.8.2)
+    moped (2.0.6)
+      bson (~> 3.0)
+      connection_pool (~> 2.0)
+      optionable (~> 0.2.0)
+    optionable (0.2.0)
     pg (0.18.2)
     pry (0.10.1)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
+    redis (3.2.1)
+    redis-namespace (1.5.2)
+      redis (~> 3.0, >= 3.0.4)
     rom (0.8.1)
       equalizer (~> 0.0, >= 0.0.9)
       transproc (~> 0.3, >= 0.3.0)
+    rom-mongo (0.1.0)
+      charlatan
+      moped
+      rom (~> 0.6, >= 0.6.0)
     rom-sql (0.5.3)
       equalizer (~> 0.0, >= 0.0.9)
       rom (~> 0.8, >= 0.8.0)
       sequel (~> 4.18)
     sequel (4.25.0)
     slop (3.6.0)
+    thread_safe (0.3.5)
     transproc (0.3.0)
+    virtus (1.0.5)
+      axiom-types (~> 0.1)
+      coercible (~> 1.0)
+      descendants_tracker (~> 0.0, >= 0.0.3)
+      equalizer (~> 0.0, >= 0.0.9)
 
 PLATFORMS
   ruby
@@ -28,8 +67,10 @@ DEPENDENCIES
   inflecto
   pg
   pry
+  rom-mongo
+  rom-redis!
   rom-sql
-  sequel
+  virtus
 
 BUNDLED WITH
    1.10.5

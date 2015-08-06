@@ -1,7 +1,6 @@
-require 'bundler/setup'
 require 'rom-sql'
-
-ROM.setup(:sql, 'postgres://localhost/rom-demo')
+# require 'rom-mongo'
+# require 'rom-redis'
 
 module Users
   class Relation < ROM::Relation[:sql]
@@ -13,6 +12,7 @@ module Users
   class Create < ROM::Commands::Create[:sql]
     relation :users
     register_as :create
+    result :one
   end
 end
 
@@ -26,7 +26,20 @@ module Posts
   class Create < ROM::Commands::Create[:sql]
     relation :posts
     register_as :create
+    result :one
   end
 end
 
-ROM.finalize
+module Comments
+  class Relation < ROM::Relation[:sql]
+    gateway :default
+    dataset :comments
+    register_as :comments
+  end
+
+  class Create < ROM::Commands::Create[:sql]
+    relation :comments
+    register_as :create
+    result :one
+  end
+end
