@@ -1,8 +1,6 @@
 #! /usr/bin/env bundler exec ruby
 
-require 'rom-sql'
-
-ROM.setup(:sql, 'postgres://localhost/rom-demo')
+require_relative '../setup_rom'
 
 ROM::SQL.gateway.connection.tap do |db|
   db.create_table? :users do

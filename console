@@ -4,12 +4,12 @@ require 'bundler/setup'
 require 'pry'
 require 'delegate'
 
-require_relative 'create_db_tables'
-require_relative 'rom'
 require_relative 'models'
+require_relative 'setup_rom'
+require_relative 'db/create_tables'
 
 CONSOLE_PROMPT = proc { |target_self, nest_level, pry| 'ROM: ' }
 
-SimpleDelegator.new(ROM.finalize.env).tap do |console|
+SimpleDelegator.new(ROM.env).tap do |console|
   Pry.start(console, prompt: CONSOLE_PROMPT)
 end

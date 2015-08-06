@@ -1,10 +1,10 @@
 require 'bundler/setup'
 
-require_relative 'drop_db_tables'
-require_relative 'create_db_tables'
-require_relative 'rom'
 require_relative 'models'
+require_relative 'setup_rom'
+require_relative 'db/drop_tables'
+require_relative 'db/create_tables'
 
-ROM.finalize.env.tap do |rom|
-  rom.command
+ROM.env.tap do |rom|
+
 end
