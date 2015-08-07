@@ -1,10 +1,17 @@
 require 'rom-sql'
-# require 'rom-mongo'
-# require 'rom-redis'
+require 'rom-mongo'
+require 'rom-redis'
 
-require_relative 'models'
+# Mongo logging is noisy
+Mongo::Logger.level = 3
 
-ROM.setup(:sql, 'postgres://localhost/rom-demo')
+ROM_CONFIG = {
+  default: [:sql, 'postgres://localhost/rom-demo'],
+  meta: [:mongo, 'mongodb://localhost/rom-demo'],
+  cache: [:redis, { host: 'localhost' }]
+}
+
+ROM.setup(ROM_CONFIG)
 
 module Repository
   def rom
@@ -12,76 +19,9 @@ module Repository
   end
 end
 
-module Users
-  class Relation < ROM::Relation[:sql]
-    gateway :default
-    dataset :users
-    register_as :users
-  end
-
-  class Create < ROM::Commands::Create[:sql]
-    relation :users
-    register_as :create
-    result :one
-  end
-
-  class AsUser < ROM::Mapper
-    relation :users
-    register_as :user
-    model User
-  end
-
-  class << self
-    include Repository
-
-    def all
-      rom.relation(:users).as(:user).to_a
-    end
-
-    def first
-      rom.relation(:users).as(:user).first
-    end
-  end
-end
-
-module Posts
-  class Relation < ROM::Relation[:sql]
-    gateway :default
-    dataset :posts
-    register_as :posts
-  end
-
-  class Create < ROM::Commands::Create[:sql]
-    relation :posts
-    register_as :create
-    result :one
-  end
-
-  class AsPost < ROM::Mapper
-    relation :posts
-    register_as :post
-    model Post
-  end
-end
-
-module Comments
-  class Relation < ROM::Relation[:sql]
-    gateway :default
-    dataset :comments
-    register_as :comments
-  end
-
-  class Create < ROM::Commands::Create[:sql]
-    relation :comments
-    register_as :create
-    result :one
-  end
-
-  class AsComment < ROM::Mapper
-    relation :comments
-    register_as :comment
-    model Comment
-  end
-end
+require_relative 'models'
+require_relative 'repos/users'
+require_relative 'repos/posts'
+require_relative 'repos/comments'
 
 ROM.finalize
