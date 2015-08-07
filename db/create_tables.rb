@@ -16,6 +16,12 @@ ROM::SQL.gateway.connection.tap do |db|
     column :body, :text
   end
 
+  db.create_table? :tags do
+    primary_key :id
+    foreign_key :post_id, :posts, null: false
+    column :name, String
+  end
+
   db.create_table? :comments do
     primary_key :id
     column :post_id, :integer

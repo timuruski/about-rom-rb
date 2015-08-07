@@ -1,3 +1,5 @@
+require_relative 'support'
+
 module Posts
   class Relation < ROM::Relation[:sql]
     gateway :default
@@ -15,6 +17,7 @@ module Posts
     relation :posts
     register_as :create
     result :one
+    input F[:reject_keys, [:tags, :author]]
   end
 
   class AsPost < ROM::Mapper

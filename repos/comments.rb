@@ -1,3 +1,5 @@
+require_relative 'support'
+
 module Comments
   class Relation < ROM::Relation[:sql]
     gateway :default

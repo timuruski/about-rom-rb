@@ -1,3 +1,5 @@
+require_relative 'support'
+
 module Users
   class Relation < ROM::Relation[:sql]
     gateway :default

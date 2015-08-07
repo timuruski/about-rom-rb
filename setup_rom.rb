@@ -13,15 +13,10 @@ ROM_CONFIG = {
 
 ROM.setup(ROM_CONFIG)
 
-module Repository
-  def rom
-    @rom ||= ROM.env
-  end
-end
-
 require_relative 'models'
 require_relative 'repos/users'
 require_relative 'repos/posts'
+require_relative 'repos/tags'
 require_relative 'repos/comments'
 
 ROM.finalize
