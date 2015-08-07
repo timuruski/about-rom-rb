@@ -1,0 +1,21 @@
+#! /usr/bin/env ruby
+
+unless ARGV.length == 1
+  warn "Usage: #{$0} <scenario>"
+  exit 1
+end
+
+require 'bundler/setup'
+require 'pry'
+require 'delegate'
+
+$LOAD_PATH.unshift File.expand_path '../', __FILE__
+
+require 'scenario'
+# require_relative 'console'
+
+CONSOLE_PROMPT = proc { |_, _, _| 'ROM: ' }
+
+Scenario.run(ARGV.first) do |scenario|
+  Pry.start(scenario, prompt: CONSOLE_PROMPT)
+end

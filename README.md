@@ -3,14 +3,13 @@
 Examples for a talk about using rom-rb. Uses a simple blog setup with Users, Posts and Comments. Use the console to play around:
 
 
-    $ ./console
+    $ ./run scenarios/basic
 
     ROM >> command(:users).create.call(name: 'Alice')
     => {:id=>1, :email=>nil, :name=>"Alice"}
 
     ROM >> relation(:users).first
     => {:id=>1, :email=>nil, :name=>"Alice"}
-
 
 
 ## NOTES
