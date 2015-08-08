@@ -10,12 +10,13 @@ require 'pry'
 require 'delegate'
 
 $LOAD_PATH.unshift File.expand_path '../', __FILE__
+$LOAD_PATH.unshift File.expand_path '../scenarios', __FILE__
 
 require 'scenario'
 # require_relative 'console'
 
-CONSOLE_PROMPT = proc { |_, _, _| 'ROM: ' }
+# CONSOLE_PROMPT = proc { |_, _, _| 'ROM: ' }
 
 Scenario.run(ARGV.first) do |scenario|
-  Pry.start(scenario, prompt: CONSOLE_PROMPT)
+  Pry.start(scenario, prompt: proc { |_,_,_| "#{scenario.__name}: " })
 end

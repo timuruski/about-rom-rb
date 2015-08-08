@@ -1,8 +1,3 @@
-#! /usr/bin/env bundler exec ruby
-
-require_relative '../setup_rom'
-require_relative 'create_tables'
-
 ROM.env.tap do |rom|
   create_user = rom.command(:users).create
   alice = create_user.call(name: 'Alice Smith', email: 'alice@example.com')

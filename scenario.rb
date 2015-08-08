@@ -8,12 +8,19 @@ class Scenario
 
   NOOP = -> { }
 
+  attr_reader :__name
+
   def initialize(name)
     @__name = name
   end
 
   def rom
     @rom ||= ROM.env
+  end
+
+  def reset
+    __run_teardown
+    __run_setup
   end
 
   def __run
@@ -26,13 +33,13 @@ class Scenario
   def __run_setup
     puts "Running setup: #{@__name}..."
     _proc = self.class.instance_variable_get(:@setup) || NOOP
-    _proc.call
+    instance_exec(&_proc)
   end
 
   def __run_teardown
     puts "Running teardown: #{@__name}..."
     _proc = self.class.instance_variable_get(:@teardown) || NOOP
-    _proc.call
+    instance_exec(&_proc)
   end
 
   # SCENARIO DSL
