@@ -1,9 +1,9 @@
 require 'rom-sql'
 require 'support'
-require_relative 'basic/create_tables'
-require_relative 'basic/drop_tables'
+require_relative 'relations/create_tables'
+require_relative 'relations/drop_tables'
 
-class Basic < Scenario
+class Relations < Scenario
   include CreateTables
   include DropTables
 
@@ -11,7 +11,7 @@ class Basic < Scenario
     ROM.setup(:sql, 'postgres://localhost/about-rom')
 
     create_tables
-    require_relative 'basic/setup_rom'
+    require_relative 'relations/setup_rom'
 
     ROM.finalize
 
