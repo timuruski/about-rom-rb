@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'ffaker'
 gem 'inflecto'
 gem 'pg'
 gem 'pry'

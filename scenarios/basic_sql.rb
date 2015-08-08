@@ -1,4 +1,5 @@
 require 'rom-sql'
+require 'ffaker'
 require 'support'
 require_relative 'basic_sql/create_tables'
 require_relative 'basic_sql/drop_tables'
@@ -15,8 +16,22 @@ class BasicSql < Scenario
       register_as :users
       dataset :users
 
+      def find(id)
+        where(id: id).one
+      end
+
       def by_name(name)
-        where(name: name)
+        where(name: regexp(name))
+      end
+
+      def by_email(email)
+        where(email: regexp(email))
+      end
+
+      private
+
+      def regexp(raw)
+        Regexp.new(Regexp.escape(raw), Regexp::IGNORECASE)
       end
     end
 
@@ -31,11 +46,34 @@ class BasicSql < Scenario
   end
 
   def seed
-    create_user = rom.command(:users).create
-    create_user.call(name: 'Alice Smith', email: 'alice@example.com')
-    create_user.call(name: 'Bob Anderson', email: 'bob@example.com')
-    create_user.call(name: 'Charlie Edwards', email: 'charlie@example.com')
-    create_user.call(name: 'Diane Simpson', email: 'diane@example.com')
+    100.times do
+      user_attrs = {
+        name: name = FFaker::Name.name,
+        email: FFaker::Internet.email(name),
+        city: FFaker::Address.city,
+        birthday: FFaker::Time.date
+      }
+
+      rom.command(:users).create.call(user_attrs)
+    end
+  end
+
+  def create_tables
+    ROM::SQL.gateway.connection.tap do |db|
+      db.create_table? :users do
+        primary_key :id
+        column :email, String
+        column :name, String
+        column :city, String
+        column :birthday, DateTime
+      end
+    end
+  end
+
+  def drop_tables
+    ROM::SQL.gateway.connection.tap do |db|
+      db.drop_table(:users)
+    end
   end
 
   teardown do
