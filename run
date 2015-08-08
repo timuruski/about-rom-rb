@@ -6,15 +6,8 @@ unless ARGV.length == 1
 end
 
 require 'bundler/setup'
-require 'pry'
-
 $LOAD_PATH.unshift File.expand_path '../lib', __FILE__
-# $LOAD_PATH.unshift File.expand_path '../scenarios', __FILE__
-
 require 'scenario'
 
-PROMPT = proc { |target,_,_| "#{target.__name} > " }
-
-Scenario.run(ARGV.first) do |scenario|
-  Pry.start(scenario, prompt: PROMPT)
-end
+scenario_path = ARGV.first
+Scenario.run(scenario_path)

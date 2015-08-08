@@ -1,4 +1,5 @@
 require 'rom'
+require 'pry'
 require 'inflecto'
 require 'forwardable'
 
@@ -27,9 +28,13 @@ class Scenario
     __run_setup
   end
 
+  def to_s
+    @__name
+  end
+
   def __run
     __run_setup
-    yield self if block_given?
+    Pry.start(self, prompt_name: "#{@__name} ")
   ensure
     __run_teardown
   end
