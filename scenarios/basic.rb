@@ -1,21 +1,39 @@
 require 'rom-sql'
 require 'support'
+require_relative 'basic/create_tables'
+require_relative 'basic/drop_tables'
 
 class Basic < Scenario
+  include CreateTables
+  include DropTables
+
   setup do
     ROM.setup(:sql, 'postgres://localhost/about-rom')
 
-    require 'basic/create_tables'
-    require 'basic/setup_rom'
+    create_tables
+    require_relative 'basic/setup_rom'
 
     ROM.finalize
-  end
 
-  teardown do
-    require 'basic/drop_tables'
+    seed
   end
 
   def seed
-    load File.expand_path('../basic/seed.rb', __FILE__)
+    create_user = rom.command(:users).create
+    alice = create_user.call(name: 'Alice Smith', email: 'alice@example.com')
+    bob = create_user.call(name: 'Bob Anderson', email: 'bob@example.com')
+
+    create_post = rom.command(:posts).create
+    post_a = create_post.call(title: "Hello, World!", body: "My first post", author_id: alice[:id])
+    post_b = create_post.call(title: "Second is best", body: "I also wrote a post", author_id: bob[:id])
+
+    create_comment = rom.command(:comments).create
+    create_comment.call(author_id: bob[:id], post_id: post_a[:id], body: 'Great post!')
+    create_comment.call(author_id: alice[:id], post_id: post_b[:id], body: 'I disagree with your conclusion.')
   end
+
+  teardown do
+    drop_tables
+  end
+
 end

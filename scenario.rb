@@ -18,7 +18,7 @@ class Scenario
     @rom ||= ROM.env
   end
 
-  def reset
+  def reset!
     __run_teardown
     __run_setup
   end
