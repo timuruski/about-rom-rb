@@ -18,6 +18,10 @@ class Scenario
     @rom ||= ROM.env
   end
 
+  def f
+    Functions[*args]
+  end
+
   def reset!
     __run_teardown
     __run_setup
@@ -60,7 +64,7 @@ class Scenario
     end
 
     def load(scenario_path)
-      require_relative scenario_path
+      require File.expand_path(scenario_path)
 
       scenario_name = File.basename(scenario_path)
       scenario_class = @scenarios[scenario_name]

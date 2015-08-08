@@ -7,16 +7,14 @@ end
 
 require 'bundler/setup'
 require 'pry'
-require 'delegate'
 
-$LOAD_PATH.unshift File.expand_path '../', __FILE__
-$LOAD_PATH.unshift File.expand_path '../scenarios', __FILE__
+$LOAD_PATH.unshift File.expand_path '../lib', __FILE__
+# $LOAD_PATH.unshift File.expand_path '../scenarios', __FILE__
 
 require 'scenario'
-# require_relative 'console'
 
-# CONSOLE_PROMPT = proc { |_, _, _| 'ROM: ' }
+PROMPT = proc { |target,_,_| "#{target.__name} > " }
 
 Scenario.run(ARGV.first) do |scenario|
-  Pry.start(scenario, prompt: proc { |_,_,_| "#{scenario.__name}: " })
+  Pry.start(scenario, prompt: PROMPT)
 end
