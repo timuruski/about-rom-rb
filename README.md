@@ -1,9 +1,15 @@
 # ABOUT ROM
 
+## Setup
+
+Create a postgres database called 'about-rom':
+    $ createdb about-rom
+
+## Basic Walk through
+
 Examples for a talk about using rom-rb. Uses a simple blog setup with Users, Posts and Comments. Use the console to play around:
 
-
-    $ ./run scenarios/basic
+    $ ./run scenarios/basic_sql
 
     ROM >> command(:users).create.call(name: 'Alice')
     => {:id=>1, :email=>nil, :name=>"Alice"}
