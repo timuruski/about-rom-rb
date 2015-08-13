@@ -1,13 +1,8 @@
 require 'rom-sql'
 require 'ffaker'
 require 'support'
-require_relative 'basic_sql/create_tables'
-require_relative 'basic_sql/drop_tables'
 
 class BasicSql < Scenario
-  include CreateTables
-  include DropTables
-
   setup do
     ROM.setup(:sql, 'postgres://localhost/about-rom')
     create_tables
