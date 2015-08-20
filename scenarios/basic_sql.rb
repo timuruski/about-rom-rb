@@ -3,13 +3,45 @@ require 'ffaker'
 require 'support'
 
 class BasicSql < Scenario
+  about <<-EOS
+  Modeled on Movies and Directors, which are already seeded (the titles are amazing).
+  Get a director with:
+
+    director = rom.relation(:directors).first
+
+  Get a director, with all movies:
+    directors = rom.relation(:directors)
+    movies = relation(:movies).for_directors
+
+    directors.combine(movies).as(:with_movies).first
+
+  EOS
+
   setup do
     ROM.setup(:sql, 'postgres://localhost/about-rom')
-    create_tables
 
-    class Users < ROM::Relation[:sql]
-      register_as :users
-      dataset :users
+    # CREATE TABLES
+    ROM::SQL.gateway.connection.tap do |db|
+      db.create_table? :directors do
+        primary_key :id
+        column :name, String
+      end
+
+      db.create_table? :movies do
+        primary_key :id
+        column :title, String
+        column :director_id, Integer
+      end
+    end
+
+    # CONFIGURE ROM
+    class Directors < ROM::Relation[:sql]
+      register_as :directors
+      dataset :directors
+
+      def by_id(id)
+        where(id: id)
+      end
 
       def find(id)
         where(id: id).one
@@ -19,20 +51,11 @@ class BasicSql < Scenario
         where(name: regexp(name))
       end
 
-      def by_email(email)
-        where(email: regexp(email))
-      end
-
       private
 
       def regexp(raw)
         Regexp.new(Regexp.escape(raw), Regexp::IGNORECASE)
       end
-    end
-
-    class CreateUser < ROM::Commands::Create[:sql]
-      relation :users
-      register_as :create
     end
 
     class Movies < ROM::Relation[:sql]
@@ -51,8 +74,8 @@ class BasicSql < Scenario
         where(director_id: director[:id])
       end
 
-      def for_users(users)
-        where(director_id: users.map { |user| user[:id] })
+      def for_directors(directors)
+        where(director_id: directors.map { |director| director[:id] })
       end
 
       private
@@ -62,46 +85,63 @@ class BasicSql < Scenario
       end
     end
 
-    class UserWithMovies < ROM::Mapper
-      relation :users
-      register_as :user_with_movies
-
-      reject_keys true
-
-      attribute :id
-      attribute :name
-      attribute :email
-
-      combine :movies, on: { id: :director_id } do
-        attribute :title
-      end
-    end
-
     class CreateMovie < ROM::Commands::Create[:sql]
       relation :movies
       register_as :create
       result :one
     end
 
-    ROM.finalize
-    seed
-  end
+    class CreateDirector < ROM::Commands::Create[:sql]
+      relation :directors
+      register_as :create
+    end
 
-  def seed
+    class WithMovies < ROM::Mapper
+      relation :directors
+      register_as :with_movies
+
+      reject_keys true
+
+      attribute :id
+      attribute :name
+
+      combine :movie, on: { id: :director_id } do
+        attribute :id
+        attribute :title
+      end
+    end
+
+    # NOTE: This doesn't quite work.
+    class WithTitles < ROM::Mapper
+      relation :directors
+      register_as :with_titles
+
+      reject_keys true
+
+      attribute :id
+      attribute :name
+
+      combine :movies, on: { id: :director_id }
+      fold :movies do
+        attribute :titles
+      end
+    end
+
+
+    ROM.finalize
+
+    # SEED DATA
     20.times do
-      user_attrs = {
+      director_attrs = {
         name: name = FFaker::Name.name,
-        email: FFaker::Internet.email(name),
-        city: FFaker::Address.city,
-        birthday: FFaker::Time.date
       }
 
-      user = rom.command(:users).create.call(user_attrs).first
+      director = rom.command(:directors).create.call(director_attrs).first
 
       5.times do
         movie_attrs = {
           title: FFaker::Movie.title,
-          director_id: user[:id]
+          director_id: director[:id]
         }
 
        rom.command(:movies).create.call(movie_attrs)
@@ -109,33 +149,10 @@ class BasicSql < Scenario
     end
   end
 
-  def create_tables
+  teardown do
     ROM::SQL.gateway.connection.tap do |db|
-      db.create_table? :users do
-        primary_key :id
-        column :email, String
-        column :name, String
-        column :city, String
-        column :birthday, DateTime
-      end
-
-      db.create_table? :movies do
-        primary_key :id
-        column :title, String
-        column :director_id, Integer
-      end
-    end
-  end
-
-  def drop_tables
-    ROM::SQL.gateway.connection.tap do |db|
-      db.drop_table(:users)
+      db.drop_table(:directors)
       db.drop_table(:movies)
     end
   end
-
-  teardown do
-    drop_tables
-  end
-
 end
