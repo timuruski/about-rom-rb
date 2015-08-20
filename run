@@ -9,5 +9,5 @@ require 'bundler/setup'
 $LOAD_PATH.unshift File.expand_path '../lib', __FILE__
 require 'scenario'
 
-scenario_path = ARGV.first
+scenario_path = ARGV.first.sub(/\.rb$/, '')
 Scenario.run(scenario_path)
