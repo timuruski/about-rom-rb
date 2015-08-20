@@ -4,9 +4,59 @@ require 'support'
 require 'virtus'
 
 class ActiveRecord < Scenario
+  about <<-EOS
+  Users are already seeded, get the first user with:
+
+    user = User.first #=> #<ActiveRecord::User @id=1, @name="Alice">
+
+  User can be updated and saved.
+
+    user.name = 'Bob'
+    user.save
+    User.find(user.id) #=> #<ActiveRecord::User @id=1, @name="Bob">
+
+  Users can also be deleted.
+
+    user.delete
+    User.find(user.id) #=> nil
+  EOS
   setup do
     ROM.setup(:sql, 'postgres://localhost/about-rom')
     create_tables
+
+    class User
+      include Virtus.model
+
+      attribute :id
+      attribute :name
+
+      class << self
+        def relation
+          ROM.env.relation(:users).as(:user)
+        end
+
+        def find(id)
+          relation.find(id).one
+        end
+
+        def by_name(name)
+          relation.by_name(name).to_a
+        end
+      end
+
+      def command
+        ROM.env.command(:users).as(:user)
+      end
+
+      def save
+        command.update.find(id).call(attributes)
+      end
+
+      def delete
+        command.delete.find(id).call
+      end
+    end
+
 
     class Users < ROM::Relation[:sql]
       register_as :users
@@ -43,39 +93,6 @@ class ActiveRecord < Scenario
       relation :users
       register_as :delete
       result :one
-    end
-
-    class User
-      include Virtus.model
-
-      attribute :id
-      attribute :name
-
-      class << self
-        def relation
-          ROM.env.relation(:users).as(:user)
-        end
-
-        def find(id)
-          relation.find(id).one
-        end
-
-        def by_name(name)
-          relation.by_name(name).to_a
-        end
-      end
-
-      def command
-        ROM.env.command(:users).as(:user)
-      end
-
-      def save
-        command.update.find(id).call(attributes)
-      end
-
-      def delete
-        command.delete.find(id).call
-      end
     end
 
     class UserMapper < ROM::Mapper

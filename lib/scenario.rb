@@ -51,6 +51,14 @@ class Scenario
     instance_exec(&_proc)
   end
 
+  def about
+    if about_str = self.class.instance_variable_get(:@about_str)
+      puts about_str
+    else
+      puts "No about defined."
+    end
+  end
+
   # SCENARIO DSL
   class << self
     def setup(&block)
@@ -59,6 +67,10 @@ class Scenario
 
     def teardown(&block)
       @teardown = block
+    end
+
+    def about(about_str)
+      @about_str = about_str
     end
   end
 

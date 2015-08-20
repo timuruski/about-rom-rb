@@ -17,6 +17,19 @@ Examples for a talk about using rom-rb. Uses a simple blog setup with Users, Pos
     ROM >> relation(:users).first
     => {:id=>1, :email=>nil, :name=>"Alice"}
 
+You can also create an `about` string for the Scenario (`help` was taken
+by Pry).
+
+    class MyScenario < Scenario
+      about <<-EOS
+        Helpful text goes here.
+      EOS
+    end
+
+    $ ./run scenarios/my_scenario
+    > about
+      Helpful text goes here
+
 
 ## NOTES
 
