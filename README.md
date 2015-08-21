@@ -2,7 +2,8 @@
 
 ## Setup
 
-Create a postgres database called 'about-rom':
+Create a postgres database called `about-rom`:
+
     $ createdb about-rom
 
 ## Basic Walk through

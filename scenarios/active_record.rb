@@ -20,10 +20,19 @@ class ActiveRecord < Scenario
     user.delete
     User.find(user.id) #=> nil
   EOS
+
   setup do
     ROM.setup(:sql, 'postgres://localhost/about-rom')
-    create_tables
 
+    # CREATE TABLES
+    ROM::SQL.gateway.connection.tap do |db|
+      db.create_table? :users do
+        primary_key :id
+        column :name, String
+      end
+    end
+
+    # DEFINE MODELS
     class User
       include Virtus.model
 
@@ -35,8 +44,28 @@ class ActiveRecord < Scenario
           ROM.env.relation(:users).as(:user)
         end
 
+        def command
+          ROM.env.command(:users).as(:user)
+        end
+
         def find(id)
-          relation.find(id).one
+          relation.by_id(id).one!
+        end
+
+        def create(attrs)
+          command.create.call(attrs)
+        end
+
+        def all
+          relation.to_a
+        end
+
+        def first
+          relation.first
+        end
+
+        def count
+          relation.count
         end
 
         def by_name(name)
@@ -49,7 +78,7 @@ class ActiveRecord < Scenario
       end
 
       def save
-        command.update.find(id).call(attributes)
+        command.update.find(id).call(attrs)
       end
 
       def delete
@@ -57,17 +86,21 @@ class ActiveRecord < Scenario
       end
     end
 
-
-    class Users < ROM::Relation[:sql]
+    # DEFINE RELATIONS, COMMANDS AND MAPPERS
+    class UserRelation < ROM::Relation[:sql]
       register_as :users
       dataset :users
 
-      def find(id)
+      def by_id(id)
         where(id: id)
       end
 
       def by_name(name)
         where(name: regexp(name))
+      end
+
+      def count
+        dataset.count
       end
 
       private
@@ -102,36 +135,21 @@ class ActiveRecord < Scenario
     end
 
     ROM.finalize
-    seed
-  end
 
-  def seed
+    # SEED MODELS
     20.times do
       user_attrs = {
         name: name = FFaker::Name.name
       }
 
-      rom.command(:users).create.call(user_attrs).first
-    end
-  end
-
-  def create_tables
-    ROM::SQL.gateway.connection.tap do |db|
-      db.create_table? :users do
-        primary_key :id
-        column :name, String
-      end
-    end
-  end
-
-  def drop_tables
-    ROM::SQL.gateway.connection.tap do |db|
-      db.drop_table(:users)
+      ROM.env.command(:users).create.call(user_attrs).first
     end
   end
 
   teardown do
-    drop_tables
+    # DROP TABLES
+    ROM::SQL.gateway.connection.tap do |db|
+      db.drop_table(:users)
+    end
   end
-
 end
