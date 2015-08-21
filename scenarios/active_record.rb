@@ -78,11 +78,11 @@ class ActiveRecord < Scenario
       end
 
       def save
-        command.update.find(id).call(attrs)
+        command.update.by_id(id).call(attributes)
       end
 
       def delete
-        command.delete.find(id).call
+        command.delete.by_id(id).call
       end
     end
 
